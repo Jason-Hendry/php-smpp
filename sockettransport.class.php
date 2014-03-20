@@ -324,7 +324,8 @@ class SocketTransport
 		$readTimeout = socket_get_option($this->socket,SOL_SOCKET,SO_RCVTIMEO);
 		while ($r < $length) {
 			$buf = '';
-			$r += socket_recv($this->socket,$buf,$length-$r,MSG_DONTWAIT);
+			$r += socket_recv($this->socket,$buf,$length-$r,
+                    (defined('MSG_DONTWAIT') ? MSG_DONTWAIT : MSG_WAITALL));
 			if ($r === false) throw new SocketTransportException('Could not read '.$length.' bytes from socket; '.socket_strerror(socket_last_error()), socket_last_error());
 			$d .= $buf;
 			if ($r == $length) return $d;

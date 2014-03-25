@@ -140,6 +140,27 @@ class SmppClient
 	}
 	
 	/**
+     * Binds the transceiver.
+     * @param string $login - ESME system_id
+     * @param string $pass - ESME password
+     * @throws SmppException
+     */
+    public function bindTransceiver($login, $pass) {
+        if (!$this->transport->isOpen())
+            return false;
+        if ($this->debug)
+            call_user_func($this->debugHandler, 'Binding transceiver...');
+
+        $response = $this->_bind($login, $pass, SMPP::BIND_TRANSCEIVER);
+
+        if ($this->debug)
+            call_user_func($this->debugHandler, "Binding status  : " . $response->status);
+        $this->mode = 'transceiver';
+        $this->login = $login;
+        $this->pass = $pass;
+    }
+
+    /**
 	 * Closes the session on the SMSC server.
 	 */
 	public function close()
@@ -599,7 +620,9 @@ class SmppClient
 		
 		if ($this->mode == 'receiver') {
 			$this->bindReceiver($this->login, $this->pass);
-		} else {
+        } else if($this->mode == 'transceiver') {
+            $this->bindTransceiver($this->login, $this->pass);
+        } else {
 			$this->bindTransmitter($this->login, $this->pass);
 		}
 	}

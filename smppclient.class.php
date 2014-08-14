@@ -140,6 +140,27 @@ class SmppClient
 	}
 	
 	/**
+     * Binds the transceiver.
+     * @param string $login - ESME system_id
+     * @param string $pass - ESME password
+     * @throws SmppException
+     */
+    public function bindTransceiver($login, $pass) {
+        if (!$this->transport->isOpen())
+            return false;
+        if ($this->debug)
+            call_user_func($this->debugHandler, 'Binding transceiver...');
+
+        $response = $this->_bind($login, $pass, SMPP::BIND_TRANSCEIVER);
+
+        if ($this->debug)
+            call_user_func($this->debugHandler, "Binding status  : " . $response->status);
+        $this->mode = 'transceiver';
+        $this->login = $login;
+        $this->pass = $pass;
+    }
+
+    /**
 	 * Closes the session on the SMSC server.
 	 */
 	public function close()
@@ -300,7 +321,7 @@ class SmppClient
 		// Figure out if we need to do CSMS, since it will affect our PDU
 		if ($msg_length > $singleSmsOctetLimit) {
 			$doCsms = true;
-			if (!self::$csms_method != SmppClient::CSMS_PAYLOAD) {
+			if (self::$csms_method != SmppClient::CSMS_PAYLOAD) {
 				$parts = $this->splitMessageString($message, $csmsSplit, $dataCoding);
 				$short_message = reset($parts);
 				$csmsReference = $this->getCsmsReference();
@@ -599,7 +620,9 @@ class SmppClient
 		
 		if ($this->mode == 'receiver') {
 			$this->bindReceiver($this->login, $this->pass);
-		} else {
+        } else if($this->mode == 'transceiver') {
+            $this->bindTransceiver($this->login, $this->pass);
+        } else {
 			$this->bindTransmitter($this->login, $this->pass);
 		}
 	}

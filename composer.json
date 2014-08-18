@@ -17,6 +17,12 @@
             "homepage": "http://www.it-lame.ru"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/fdelapena/php-smpp"
+        }
+    ],
     "require": {
         "php": ">=5.3.0",
         "ext-sockets": "*"

@@ -531,8 +531,8 @@ class SmppClient
 		$esmClass = next($ar);
 		$protocolId = next($ar);
 		$priorityFlag = next($ar);
-		next($ar); // schedule_delivery_time
-		next($ar); // validity_period 
+		$schedule_delivery_time = $this->getString($ar,17); 
+		$validity_period = $this->getString($ar,17); 
 		$registeredDelivery = next($ar);
 		next($ar); // replace_if_present_flag 
 		$dataCoding = next($ar);

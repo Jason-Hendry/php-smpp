@@ -149,7 +149,7 @@ class SMPP
 	const DATA_CODING_KSC5601 = 14;
 	
 	// GSM 03.38 - 4 - page 8
-	const DATA_CODING_CLASS_PRESENT = 16;
+	const DATA_CODING_CLASS_PRESENT = 240;
 	const DATA_CODING_CLASS_0 = 0; // If capable, MS shall display the message immediately and shall not be automatically stored
 	const DATA_CODING_CLASS_1 = 1; // default meaning: ME-specific. The MS shall normally store the message in the ME by default
 	const DATA_CODING_CLASS_2 = 2; // (U)SIM-specific message.

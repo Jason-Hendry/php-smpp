@@ -32,7 +32,7 @@ class SMPP
 	const ENQUIRE_LINK = 0x00000015;
 	const ENQUIRE_LINK_RESP = 0x80000015;
 	
-	//  Command status - SMPP v3.4 - 5.1.3 page 112-114
+	// Command status - SMPP v3.4 - 5.1.3 page 112-114
 	const ESME_ROK = 0x00000000; // No Error
 	const ESME_RINVMSGLEN = 0x00000001; // Message Length is invalid
 	const ESME_RINVCMDLEN = 0x00000002; // Command Length is invalid
@@ -82,7 +82,7 @@ class SMPP
 	const ESME_RDELIVERYFAILURE = 0x000000FE; // Delivery Failure (data_sm_resp)
 	const ESME_RUNKNOWNERR = 0x000000FF; // Unknown Error
 	
-	// SMPP v3.4 - 5.2.5 page 117	
+	// SMPP v3.4 - 5.2.5 page 117
 	const TON_UNKNOWN = 0x00;
 	const TON_INTERNATIONAL = 0x01;
 	const TON_NATIONAL = 0x02;
@@ -147,7 +147,15 @@ class SMPP
 	const DATA_CODING_ISO2022_JP = 10; // Music codes
 	const DATA_CODING_KANJI = 13; // Extended Kanji JIS
 	const DATA_CODING_KSC5601 = 14;
-		
+	
+	// GSM 03.38 - 4 - page 8
+	const DATA_CODING_CLASS_PRESENT = 16;
+	const DATA_CODING_CLASS_0 = 0; // If capable, MS shall display the message immediately and shall not be automatically stored
+	const DATA_CODING_CLASS_1 = 1; // default meaning: ME-specific. The MS shall normally store the message in the ME by default
+	const DATA_CODING_CLASS_2 = 2; // (U)SIM-specific message.
+	const DATA_CODING_CLASS_3 = 3; // default meaning: TE specific (see 3GPP TS 27.005 [8])
+	const DATA_CODING_CLASS_8_BIT = 4;
+	
 	// SMPP v3.4 - 5.2.25 page 129
 	const DEST_FLAG_SME = 1;
 	const DEST_FLAG_DISTLIST = 2;
@@ -162,7 +170,7 @@ class SMPP
 	const STATE_UNKNOWN = 7;
 	const STATE_REJECTED = 8;
 	
-		
+	
 	public static function getStatusMessage($statuscode) {
 		switch ($statuscode) {
 			case SMPP::ESME_ROK: return 'No Error';

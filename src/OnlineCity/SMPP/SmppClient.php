@@ -306,7 +306,7 @@ class SmppClient
 	 * @param string $validityPeriod (optional)
 	 * @return string message id
 	 */
-	public function sendSMS(SmppAddress $from, SmppAddress $to, $message, $tags=null, $dataCoding=SMPP::DATA_CODING_DEFAULT, $priority=0x00, $scheduleDeliveryTime=null, $validityPeriod=null)
+	public function sendSMS(SmppAddress $from, SmppAddress $to, $message, $tags=null, $dataCoding=SMPP::DATA_CODING_DEFAULT, $priority=0x00, $scheduleDeliveryTime=null, $validityPeriod=null, $esmClass=null)
 	{
 		$msg_length = strlen($message);
 		
@@ -343,7 +343,7 @@ class SmppClient
 		if ($doCsms) {
 			if (self::$csms_method == SmppClient::CSMS_PAYLOAD) {
 				$payload = new SmppTag(SmppTag::MESSAGE_PAYLOAD, $message, $msg_length);
-				return $this->submit_sm($from, $to, null, (empty($tags) ? array($payload) : array_merge($tags,$payload)), $dataCoding, $priority, $scheduleDeliveryTime, $validityPeriod);
+				return $this->submit_sm($from, $to, null, (empty($tags) ? array($payload) : array_merge($tags,$payload)), $dataCoding, $priority, $scheduleDeliveryTime, $validityPeriod, $esmClass);
 			} else if (self::$csms_method == SmppClient::CSMS_8BIT_UDH) {
 				$seqnum = 1;
 				foreach ($parts as $part) {
@@ -358,14 +358,14 @@ class SmppClient
 				$seqnum = 1;
 				foreach ($parts as $part) {
 					$sartags = array($sar_msg_ref_num, $sar_total_segments, new SmppTag(SmppTag::SAR_SEGMENT_SEQNUM, $seqnum, 1, 'c'));
-					$res = $this->submit_sm($from, $to, $part, (empty($tags) ? $sartags : array_merge($tags,$sartags)), $dataCoding, $priority, $scheduleDeliveryTime, $validityPeriod);
+					$res = $this->submit_sm($from, $to, $part, (empty($tags) ? $sartags : array_merge($tags,$sartags)), $dataCoding, $priority, $scheduleDeliveryTime, $validityPeriod, $esmClass);
 					$seqnum++;
 				}
 				return $res;
 			}
 		}
 		
-		return $this->submit_sm($from, $to, $short_message, $tags, $dataCoding);
+		return $this->submit_sm($from, $to, $short_message, $tags, $dataCoding, $priority, $scheduleDeliveryTime, $validityPeriod, $esmClass);
 	}
 	
 	/**
@@ -736,15 +736,15 @@ class SmppClient
 		extract(unpack("Ncommand_id/Ncommand_status/Nsequence_number", $bufHeaders));
 		
 		// Read PDU body
-		if($length-16>0){
-			$body=$this->transport->readAll($length-16);
+		if($bufLength-16>0){
+			$body=$this->transport->readAll($bufLength-16);
 			if(!$body) throw new \RuntimeException('Could not read PDU body');
 		} else {
 			$body=null;
 		}
 		
 		if($this->debug) {
-			call_user_func($this->debugHandler, "Read PDU         : $length bytes");
+			call_user_func($this->debugHandler, "Read PDU         : $bufLength bytes");
 			call_user_func($this->debugHandler, ' '.chunk_split(bin2hex($bufLength.$bufHeaders.$body),2," "));
 			call_user_func($this->debugHandler, " command id      : 0x".dechex($command_id));
 			call_user_func($this->debugHandler, " command status  : 0x".dechex($command_status)." ".SMPP::getStatusMessage($command_status));
